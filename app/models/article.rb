@@ -4,15 +4,15 @@ class GoodnessValidator < ActiveModel::Validator
       record.errors[:base] << "This person is evil"
     end
   end
+  def validates_each(record, attr, value)
+    	if value =~ /\A[[:lower:]]/
+    		record.errors[attr] << (options[:message] || "not in uper case")
+    	end
+  end
 end
 class Article < ApplicationRecord
 	validates_with GoodnessValidator
 	has_many :comments, dependent: :destroy
-	validates_each :title do |record, attr, value|
-    record.errors.add(attr, 'must start with upper case') 
-    	if value =~ /\A[[:lower:]]/
-    	end
-  	end
 	validates_associated :comments
 	validates :text, exclusion: { in: %w(www us ca jp), message: "%{value} is not allowed" }
     validates :text, length: { maximum: 10,
